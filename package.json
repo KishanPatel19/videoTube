@@ -1,0 +1,12 @@
+{
+  "name": "videotube",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Kishan Patel",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
