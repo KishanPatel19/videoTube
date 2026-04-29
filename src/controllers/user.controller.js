@@ -13,25 +13,36 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All Fields are required !");
   }
 
-  const existedUser = User.findOne({
-    $or: [{ username }, { password }],
+  const existedUser = await User.findOne({
+    $or: [{ username }, { email }],
   });
   if (existedUser) {
     throw new ApiError(409, "This email or username are already taken ");
   }
+  console.log(req.files)
 
   const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage[0]?.path;
+  //const coverImageLocalPath = req.files?.coverImage[0]?.path
+
+  let coverImageLocalPath;
+  if(req.files && Array.isArray(req.files.coverImage) &&
+  req.files.coverImage.length > 0)
+  {
+    coverImageLocalPath = req.files.coverImage[0].path
+  }
+
+
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "avatar ia required !");
   }
   const avatar = await uploadOnCloudinary(avatarLocalPath);
+  console.log("Avatar response:", avatar);
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
   if (!avatar) {
     throw new ApiError(400, "avatar is mandetory");
   }
-  const user = User.create({
+  const user = await User.create({
     username:username.toLowerCase(),
     password:password,
     email:email,
@@ -40,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
     coverImage:coverImage?.url||""
   })
 
- const createdUser = User.findById(user._id).select(
+ const createdUser = await User.findById(user._id).select(
   "-password -refreshToken"
  )
 
